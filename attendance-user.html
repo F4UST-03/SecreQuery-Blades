@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <style>
+        @import url("https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css");
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        * {
+            -webkit-font-smoothing: antialiased;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            height: 100%;
+            font-family: "Inter", sans-serif;
+            background-color: #f1f1f1;
+        }
+
+        button:focus-visible {
+            outline: 2px solid #4a90e2 !important;
+            outline: -webkit-focus-ring-color auto 5px !important;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* Main Layout */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background-color: #ffffff;
+            border-bottom: 2px solid #000;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 1002;
+            transition: left 0.3s ease;
+        }
+
+        .top-bar.sidebar-open {
+            left: 280px;
+        }
+
+        .hamburger-menu {
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
+            margin-right: 16px;
+        }
+
+        .hamburger-menu:hover {
+            background-color: #f8f9fa;
+        }
+
+        .hamburger-icon {
+            width: 24px;
+            height: 18px;
+            position: relative;
+            transform: rotate(0deg);
+            transition: 0.3s ease-in-out;
+        }
+
+        .hamburger-icon span {
+            display: block;
+            position: absolute;
+            height: 3px;
+            width: 100%;
+            background: #333;
+            border-radius: 2px;
+            opacity: 1;
+            left: 0;
+            transform: rotate(0deg);
+            transition: 0.25s ease-in-out;
+        }
+
+        .hamburger-icon span:nth-child(1) {
+            top: 0px;
+        }
+
+        .hamburger-icon span:nth-child(2) {
+            top: 7px;
+        }
+
+        .hamburger-icon span:nth-child(3) {
+            top: 14px;
+        }
+
+        /* Hamburger animation when active */
+        .hamburger-menu.active .hamburger-icon span:nth-child(1) {
+            top: 7px;
+            transform: rotate(135deg);
+        }
+
+        .hamburger-menu.active .hamburger-icon span:nth-child(2) {
+            opacity: 0;
+            left: -60px;
+        }
+
+        .hamburger-menu.active .hamburger-icon span:nth-child(3) {
+            top: 7px;
+            transform: rotate(-135deg);
+        }
+
+        .top-bar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .top-bar-logo-container {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #1f3463, #2a4a7a);
+            border-radius: 50%;
+            border: 2px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .top-bar-logo-icon {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .top-bar-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f3463;
+            font-style: italic;
+        }
+
+        .top-bar-user {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar-nav {
+            background: linear-gradient(135deg, #1f3463, #2a4a7a);
+            width: 280px;
+            min-height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            padding-top: 70px;
+            transform: translateX(-280px);
+        }
+
+        .sidebar-nav.open {
+            transform: translateX(0);
+        }
+
+        .nav-menu {
+            flex: 1;
+            padding: 40px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-item {
+            padding: 16px 24px;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 0 25px 25px 0;
+            margin-right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+
+        .nav-divider {
+            height: 2px;
+            background: rgba(255, 255, 255, 0.2);
+            margin: 20px 24px;
+        }
+
+        .nav-settings {
+            margin-top: auto;
+            padding: 20px 24px;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-settings:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            margin-left: 0;
+            margin-top: 70px;
+            min-height: calc(100vh - 70px);
+            display: flex;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.sidebar-open {
+            margin-left: 280px;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        /* Attendance Content */
+        .attendance-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .date-info {
+            font-size: 18px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* Course Cards */
+        .course-card {
+            background-color: #fff;
+            border-radius: 15px;
+            border-right: 2px solid #000;
+            border-bottom: 2px solid #000;
+            padding: 24px;
+            margin-bottom: 16px;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .course-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        .status-badge {
+            width: 120px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+
+        .status-tbd {
+            background: linear-gradient(135deg, #11a3d4, #0891b2);
+        }
+
+        .status-absent {
+            background: linear-gradient(135deg, #f95757, #dc2626);
+        }
+
+        .status-late {
+            background: linear-gradient(135deg, #efa503, #d97706);
+        }
+
+        .status-present {
+            background: linear-gradient(135deg, #5dc966, #16a34a);
+        }
+
+        .course-info {
+            flex: 1;
+        }
+
+        .course-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .course-details {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .course-time {
+            font-size: 16px;
+            font-weight: 500;
+            color: #444;
+        }
+
+        /* Right Sidebar */
+        .right-sidebar {
+            width: 350px;
+            background-color: #fff;
+            border-left: 2px solid #000;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            box-shadow: -2px 0 8px rgba(0,0,0,0.1);
+        }
+
+        /* Calendar Widget */
+        .calendar-widget {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-month {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .calendar-year {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .calendar-day {
+            text-align: center;
+            padding: 8px 4px;
+            font-size: 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .calendar-day.header {
+            font-weight: 600;
+            color: #666;
+            font-size: 12px;
+            cursor: default;
+        }
+
+        .calendar-day:not(.header):hover {
+            background-color: #e3f2fd;
+        }
+
+        .calendar-day.today {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Note Section */
+        .note-section {
+            display: flex;
+            gap: 12px;
+            margin-top: 350px;
+            align-items: end;
+        }
+
+        .note-input {
+            flex: 1;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 25px;
+            padding: 12px 20px;
+            font-size: 14px;
+            color: #666;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .note-input:focus {
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        .add-note-btn {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .add-note-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+
+        /* Sidebar overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 1200px) {
+            .content-wrapper {
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .right-sidebar {
+                width: 300px;
+            }
+        }
+
+        @media screen and (max-width: 1024px) {
+            .content-wrapper {
+                flex-direction: column;
+                padding: 16px;
+            }
+            
+            .right-sidebar {
+                width: 100%;
+                border-left: none;
+                border-top: 2px solid #000;
+                box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .course-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 16px;
+                padding: 20px;
+            }
+            
+            .status-badge {
+                width: 140px;
+                height: 50px;
+                font-size: 14px;
+            }
+            
+            .course-title {
+                font-size: 18px;
+            }
+            
+            .page-title {
+                font-size: 28px;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                gap: 8px;
+                align-items: flex-start;
+            }
+
+            .top-bar {
+                padding: 0 16px;
+            }
+
+            .top-bar-title {
+                font-size: 20px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .content-wrapper {
+                padding: 12px;
+            }
+            
+            .course-card {
+                padding: 16px;
+            }
+            
+            .status-badge {
+                width: 120px;
+                height: 45px;
+                font-size: 13px;
+            }
+            
+            .course-title {
+                font-size: 16px;
+            }
+            
+            .page-title {
+                font-size: 24px;
+            }
+            
+            .right-sidebar {
+                padding: 16px;
+            }
+            
+            .calendar-widget {
+                padding: 16px;
+            }
+
+            .top-bar {
+                height: 60px;
+                padding: 0 12px;
+            }
+
+            .main-content {
+                margin-top: 60px;
+                min-height: calc(100vh - 60px);
+            }
+
+            .top-bar-title {
+                font-size: 18px;
+            }
+
+            .hamburger-menu {
+                width: 36px;
+                height: 36px;
+                margin-right: 12px;
+            }
+        }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+        <!-- Top Bar -->
+        <header class="top-bar" id="topBar">
+            <div class="hamburger-menu" id="hamburgerMenu">
+                <div class="hamburger-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+            <div class="top-bar-logo">
+                <div class="top-bar-logo-container">
+                    <div class="top-bar-logo-icon">SQ</div>
+                </div>
+                <div class="top-bar-title">SecreQuery</div>
+            </div>
+            <div class="top-bar-user">
+                <div class="user-name">John</div>
+                <div class="user-avatar">JD</div>
+            </div>
+        </header>
+
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar-nav" id="sidebar">
+            <div class="nav-menu">
+                <div class="nav-item">
+                    <span>📊</span>
+                    Dashboard
+                </div>
+                <div class="nav-item active">
+                    <span>📋</span>
+                    Attendance
+                </div>
+                <div class="nav-item">
+                    <span>📝</span>
+                    Notes
+                </div>
+                <div class="nav-divider"></div>
+                <div class="nav-item">
+                    <span>✅</span>
+                    Tasks
+                </div>
+                <div class="nav-item">
+                    <span>🎉</span>
+                    Events
+                </div>
+                <div class="nav-item">
+                    <span>📅</span>
+                    Calendar
+                </div>
+            </div>
+            
+            <div class="nav-settings">
+                <span>⚙️</span>
+                Settings
+            </div>
+        </nav>
+
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <div class="content-wrapper">
+                <!-- Attendance Content -->
+                <div class="attendance-content">
+                    <div class="page-header">
+                        <h1 class="page-title">Attendance</h1>
+                        <div class="date-info">May 04, 2025 | Monday</div>
+                    </div>
+
+                    <div class="course-card">
+                        <div class="status-badge status-tbd">TBD</div>
+                        <div class="course-info">
+                            <div class="course-title">Web Applications Development II</div>
+                            <div class="course-details">Comlab A | Mr. Carlo Soleta</div>
+                            <div class="course-time">5:00 - 7:00</div>
+                        </div>
+                    </div>
+
+                    <div class="course-card">
+                        <div class="status-badge status-absent">Absent</div>
+                        <div class="course-info">
+                            <div class="course-title">Christian Teachings IV</div>
+                            <div class="course-details">EFS 401 | Mr. Agustin Zacarias III</div>
+                            <div class="course-time">3:00 - 4:00</div>
+                        </div>
+                    </div>
+
+                    <div class="course-card">
+                        <div class="status-badge status-late">Late</div>
+                        <div class="course-info">
+                            <div class="course-title">Network and Communication</div>
+                            <div class="course-details">Comlab B | Mr. Daniel John Saballa</div>
+                            <div class="course-time">1:00 - 2:30</div>
+                        </div>
+                    </div>
+
+                    <div class="course-card">
+                        <div class="status-badge status-present">Present</div>
+                        <div class="course-info">
+                            <div class="course-title">Math Logic</div>
+                            <div class="course-details">EFS 409 | Mr. Kristian Belchez</div>
+                            <div class="course-time">10:30 - 12:00</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Sidebar -->
+                <aside class="right-sidebar">
+                    <div class="calendar-widget">
+                        <div class="calendar-header">
+                            <div class="calendar-month">MAY</div>
+                            <div class="calendar-year">2025</div>
+                        </div>
+                        <div class="calendar-grid">
+                            <div class="calendar-day header">SUN</div>
+                            <div class="calendar-day header">MON</div>
+                            <div class="calendar-day header">TUE</div>
+                            <div class="calendar-day header">WED</div>
+                            <div class="calendar-day header">THU</div>
+                            <div class="calendar-day header">FRI</div>
+                            <div class="calendar-day header">SAT</div>
+                            
+                            <div class="calendar-day">27</div>
+                            <div class="calendar-day">28</div>
+                            <div class="calendar-day">29</div>
+                            <div class="calendar-day">30</div>
+                            <div class="calendar-day">1</div>
+                            <div class="calendar-day">2</div>
+                            <div class="calendar-day">3</div>
+                            
+                            <div class="calendar-day today">4</div>
+                            <div class="calendar-day">5</div>
+                            <div class="calendar-day">6</div>
+                            <div class="calendar-day">7</div>
+                            <div class="calendar-day">8</div>
+                            <div class="calendar-day">9</div>
+                            <div class="calendar-day">10</div>
+                            
+                            <div class="calendar-day">11</div>
+                            <div class="calendar-day">12</div>
+                            <div class="calendar-day">13</div>
+                            <div class="calendar-day">14</div>
+                            <div class="calendar-day">15</div>
+                            <div class="calendar-day">16</div>
+                            <div class="calendar-day">17</div>
+                            
+                            <div class="calendar-day">18</div>
+                            <div class="calendar-day">19</div>
+                            <div class="calendar-day">20</div>
+                            <div class="calendar-day">21</div>
+                            <div class="calendar-day">22</div>
+                            <div class="calendar-day">23</div>
+                            <div class="calendar-day">24</div>
+                            
+                            <div class="calendar-day">25</div>
+                            <div class="calendar-day">26</div>
+                            <div class="calendar-day">27</div>
+                            <div class="calendar-day">28</div>
+                            <div class="calendar-day">29</div>
+                            <div class="calendar-day">30</div>
+                            <div class="calendar-day">31</div>
+                        </div>
+                    </div>
+
+                    <div class="note-section">
+                        <input type="text" class="note-input" placeholder="Add note...">
+                        <button class="add-note-btn">+</button>
+                    </div>
+                </aside>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Sidebar toggle functionality
+        const hamburgerMenu = document.getElementById('hamburgerMenu');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const mainContent = document.getElementById('mainContent');
+        const topBar = document.getElementById('topBar');
+
+        let sidebarOpen = false;
+
+        function toggleSidebar() {
+            sidebarOpen = !sidebarOpen;
+            
+            if (window.innerWidth > 1024) {
+                // Desktop behavior
+                if (sidebarOpen) {
+                    sidebar.classList.add('open');
+                    mainContent.classList.add('sidebar-open');
+                    topBar.classList.add('sidebar-open');
+                } else {
+                    sidebar.classList.remove('open');
+                    mainContent.classList.remove('sidebar-open');
+                    topBar.classList.remove('sidebar-open');
+                }
+            } else {
+                // Mobile behavior
+                if (sidebarOpen) {
+                    sidebar.classList.add('open');
+                    sidebarOverlay.classList.add('active');
+                } else {
+                    sidebar.classList.remove('open');
+                    sidebarOverlay.classList.remove('active');
+                }
+            }
+            
+            hamburgerMenu.classList.toggle('active', sidebarOpen);
+        }
+
+        hamburgerMenu.addEventListener('click', toggleSidebar);
+
+        sidebarOverlay.addEventListener('click', () => {
+            if (window.innerWidth <= 1024 && sidebarOpen) {
+                sidebarOpen = true; // Set to true so toggle will close it
+                toggleSidebar();
+            }
+        });
+
+        // Close sidebar when clicking nav items on mobile
+        const navItems = document.querySelectorAll('.nav-item, .nav-settings');
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                if (window.innerWidth <= 1024 && sidebarOpen) {
+                    sidebarOpen = true; // Set to true so toggle will close it
+                    toggleSidebar();
+                }
+            });
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth <= 1024) {
+                // On mobile, close sidebar and reset desktop classes
+                if (sidebarOpen) {
+                    sidebar.classList.remove('open');
+                    sidebarOverlay.classList.remove('active');
+                    mainContent.classList.remove('sidebar-open');
+                    topBar.classList.remove('sidebar-open');
+                    hamburgerMenu.classList.remove('active');
+                    sidebarOpen = false;
+                }
+            } else {
+                // On desktop, remove mobile overlay
+                sidebarOverlay.classList.remove('active');
+            }
+        });
+
+        // Add note functionality
+        const noteInput = document.querySelector('.note-input');
+        const addNoteBtn = document.querySelector('.add-note-btn');
+
+        addNoteBtn.addEventListener('click', () => {
+            if (noteInput.value.trim()) {
+                // In a real app, this would save the note
+                alert('Note added: ' + noteInput.value);
+                noteInput.value = '';
+            }
+        });
+
+        noteInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addNoteBtn.click();
+            }
+        });
+    </script>
+  </body>
+</html>

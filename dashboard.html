@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <style>
+        @import url("https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css");
+        
+        * {
+          -webkit-font-smoothing: antialiased;
+          box-sizing: border-box;
+        }
+        
+        html,
+        body {
+          margin: 0px;
+          height: 100%;
+          font-family: "Inter", sans-serif;
+          overflow-x: hidden;
+        }
+        
+        button:focus-visible {
+          outline: 2px solid #4a90e2 !important;
+          outline: -webkit-focus-ring-color auto 5px !important;
+        }
+        
+        a {
+          text-decoration: none;
+        }
+
+        .dashboard {
+          display: flex;
+          background-color: #f0f0f0;
+          width: 100%;
+          min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+          background-color: #1f3463;
+          min-height: 100vh;
+          position: fixed;
+          left: 0;
+          top: 0;
+          z-index: 1000;
+          transition: width 0.3s ease;
+          width: 80px;
+          overflow: hidden;
+        }
+
+        .sidebar.expanded {
+          width: 480px;
+          max-width: 480px;
+        }
+
+        .sidebar-content {
+          position: relative;
+          min-height: 100vh;
+          padding: 0 20px;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .sidebar.expanded .sidebar-content {
+          padding: 0 20px;
+        }
+
+        /* Header section in sidebar */
+        .sidebar-header {
+          position: relative;
+          width: 100%;
+          height: 112px;
+          background-color: #ffffff;
+          display: flex;
+          align-items: center;
+          padding: 0 20px;
+        }
+
+        .sidebar.expanded .sidebar-header {
+          padding: 0 20px;
+        }
+
+        .menu-button {
+          width: 50px;
+          height: 50px;
+          background: none;
+          border: none;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 24px;
+          margin-right: 20px;
+        }
+
+        .sidebar.expanded .menu-button {
+          margin-right: 20px;
+        }
+
+        .logo-section {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+          opacity: 1;
+          transition: opacity 0.2s ease, visibility 0.2s ease;
+          visibility: visible;
+        }
+
+        .sidebar.expanded .logo-section {
+          opacity: 1;
+          visibility: visible;
+          pointer-events: auto;
+        }
+
+        .logo-circle {
+          width: 80px;
+          height: 80px;
+          background-color: #1f3463;
+          border-radius: 50%;
+          border: 2px solid #000000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .logo-circle img {
+          width: 68px;
+          height: 68px;
+          object-fit: cover;
+          border-radius: 50%;
+        }
+
+        .logo-text {
+          font-family: "Inter-Italic", Helvetica;
+          font-weight: 400;
+          font-style: italic;
+          color: #000000;
+          font-size: 32px;
+          white-space: nowrap;
+        }
+
+        /* Navigation items */
+        .nav-item {
+          position: absolute;
+          left: 26px;
+          width: calc(100% - 52px);
+          height: 51px;
+          display: flex;
+          align-items: center;
+          gap: 15px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          color: white;
+          font-size: 16px;
+        }
+
+        .nav-item:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          padding-left: 10px;
+        }
+
+        .nav-item img {
+          width: 24px;
+          height: 24px;
+          flex-shrink: 0;
+        }
+
+        .nav-item span {
+          opacity: 1;
+          transition: opacity 0.2s ease, visibility 0.2s ease;
+          white-space: nowrap;
+          visibility: hidden;
+        }
+
+        .sidebar.expanded .nav-item {
+          width: calc(100% - 52px);
+          left: 26px;
+          justify-content: flex-start;
+        }
+
+        .sidebar.expanded .nav-item span {
+          opacity: 1;
+          visibility: visible;
+          pointer-events: auto;
+        }
+
+        .sidebar.expanded .nav-item:hover {
+          padding-left: 10px;
+        }
+
+        /* Individual nav item positions */
+        .dashboard-nav { top: 140px; }
+        .attendance-nav { top: 210px; }
+        .notes-nav { top: 280px; }
+        .tasks-nav { top: 350px; }
+        .events-nav { top: 420px; }
+        .calendar-nav { top: 490px; }
+        .settings-nav { bottom: 20px; }
+
+        /* Dividers */
+        .divider {
+          position: absolute;
+          left: 21px;
+          width: calc(100% - 42px);
+          height: 2px;
+          background-color: #ffffff;
+        }
+
+        .divider-1 { top: 330px; }
+        .divider-2 { top: 470px; }
+
+        .sidebar.expanded .divider {
+          width: calc(100% - 42px);
+          left: 21px;
+        }
+
+        /* Main content */
+        .main-container {
+          flex: 1;
+          margin-left: 80px;
+          transition: margin-left 0.3s ease;
+          min-height: 100vh;
+        }
+
+        .main-container.sidebar-expanded {
+          margin-left: 480px;
+        }
+
+        .main-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 1rem 2rem;
+          background-color: #fff;
+          border-bottom: 1px solid #000;
+          flex-wrap: wrap;
+        }
+
+        .header-logo {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .header-logo-circle {
+          width: 60px;
+          height: 60px;
+          background-color: #1f3463;
+          border: 2px solid #000;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .header-logo-circle img {
+          width: 90%;
+          height: auto;
+        }
+
+        .header-logo-text {
+          font-style: italic;
+          font-size: 1.5rem;
+          white-space: nowrap;
+        }
+
+        .user-dropdown {
+          width: 50px;
+          height: 50px;
+          background-color: #aeacac;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-weight: 600;
+          font-size: 1.2rem;
+          border: 1px solid #000;
+        }
+
+        .main-content {
+          padding: 2rem;
+          display: flex;
+          flex-direction: column;
+          gap: 2rem;
+        }
+
+        .section {
+          background-color: #fff;
+          padding: 1rem;
+          border-radius: 10px;
+        }
+
+        .section h2 {
+          font-size: 2rem;
+          margin-bottom: 1rem;
+        }
+
+        .section-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1rem;
+        }
+
+        .section-header .view-link {
+          font-style: italic;
+          color: #007fff;
+          text-decoration: underline;
+          font-size: 1rem;
+        }
+
+        .task {
+          display: flex;
+          align-items: flex-start;
+          gap: 1rem;
+          margin-bottom: 1rem;
+        }
+
+        .calendar-box {
+          width: 60px;
+          height: 60px;
+          border-radius: 15px;
+          background-color: #11a3d4;
+          color: #fff;
+          font-weight: 900;
+          font-size: 1.5rem;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .calendar-box.orange {
+          background-color: #efa503;
+        }
+
+        .calendar-box.red {
+          background-color: #f95757;
+        }
+
+        .task-info {
+          flex: 1;
+        }
+
+        .task-title {
+          font-size: 1.25rem;
+          font-weight: 300;
+        }
+
+        .task-desc {
+          font-size: 1rem;
+          color: #555;
+        }
+
+        /* Mobile responsive */
+        @media screen and (max-width: 768px) {
+          .sidebar {
+            width: 60px;
+          }
+          
+          .sidebar.expanded {
+            width: 280px;
+          }
+          
+          .main-container {
+            margin-left: 60px;
+          }
+          
+          .main-container.sidebar-expanded {
+            margin-left: 280px;
+          }
+          
+          .main-header {
+            padding: 1rem;
+          }
+          
+          .main-content {
+            padding: 1rem;
+          }
+          
+          .task {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          
+          .calendar-box {
+            width: 50px;
+            height: 50px;
+            font-size: 1.2rem;
+          }
+          
+          .task-title {
+            font-size: 1rem;
+          }
+          
+          .task-desc {
+            font-size: 0.875rem;
+          }
+        }
+
+        @media screen and (max-width: 480px) {
+          .main-container {
+            margin-left: 50px;
+          }
+          
+          .sidebar {
+            width: 50px;
+          }
+          
+          .sidebar.expanded {
+            width: 240px;
+          }
+          
+          .main-container.sidebar-expanded {
+            margin-left: 240px;
+          }
+        }
+
+        :root {
+          --shape-corner-full: 1000px;
+        }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard">
+      <!-- Sidebar -->
+      <nav class="sidebar" id="sidebar">
+        <div class="sidebar-content">
+          <!-- Header section -->
+          <div class="sidebar-header">
+            <button class="menu-button" id="menuToggle">☰</button>
+            <div class="logo-section">
+              <div class="logo-circle">
+                <img src="https://via.placeholder.com/68x68/ffff00/000000?text=🦆" alt="Duck Logo" />
+              </div>
+              <div class="logo-text">SecreQuery</div>
+            </div>
+          </div>
+
+          <!-- Navigation items -->
+          <div class="nav-item dashboard-nav">
+            <img src="https://via.placeholder.com/24x24/ffffff/000000?text=📊" alt="Dashboard" />
+            <span>Dashboard</span>
+          </div>
+
+          <div class="nav-item attendance-nav">
+            <img src="https://via.placeholder.com/24x24/ffffff/000000?text=📋" alt="Attendance" />
+            <span>Attendance</span>
+          </div>
+
+          <div class="nav-item notes-nav">
+            <img src="https://via.placeholder.com/24x24/ffffff/000000?text=📝" alt="Notes" />
+            <span>Notes</span>
+          </div>
+
+          <div class="divider divider-1"></div>
+
+          <div class="nav-item tasks-nav">
+            <img src="https://via.placeholder.com/24x24/ffffff/000000?text=✓" alt="Tasks" />
+            <span>Tasks</span>
+          </div>
+
+          <div class="divider divider-2"></div>
+
+          <div class="nav-item events-nav">
+            <img src="https://via.placeholder.com/24x24/ffffff/000000?text=🎉" alt="Events" />
+            <span>Events</span>
+          </div>
+
+          <div class="nav-item calendar-nav">
+            <img src="https://via.placeholder.com/24x24/ffffff/000000?text=📅" alt="Calendar" />
+            <span>Calendar</span>
+          </div>
+
+          <div class="nav-item settings-nav">
+            <img src="https://via.placeholder.com/24x24/ffffff/000000?text=⚙️" alt="Settings" />
+            <span>Settings</span>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Main content area -->
+      <div class="main-container" id="mainContainer">
+        <header class="main-header">
+          <div class="header-logo">
+            <div class="header-logo-circle">
+              <img src="https://via.placeholder.com/68x68/ffff00/000000?text=🦆" alt="Duck Logo" />
+            </div>
+            <div class="header-logo-text">SecreQuery</div>
+          </div>
+          <div class="user-dropdown">JD</div>
+        </header>
+
+        <main class="main-content">
+          <div class="section tasks-preview">
+            <div class="section-header">
+              <h2>Tasks</h2>
+              <a class="view-link" href="#">View all tasks</a>
+            </div>
+            <div class="task">
+              <div class="calendar-box orange">1</div>
+              <div class="task-info">
+                <div class="task-title">Task name here...</div>
+                <div class="task-desc">Tomorrow na ang deadline nito...</div>
+              </div>
+            </div>
+            <div class="task">
+              <div class="calendar-box red">0</div>
+              <div class="task-info">
+                <div class="task-title">Task name here...</div>
+                <div class="task-desc">Mamaya na ang deadline nito...</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section events-preview">
+            <div class="section-header">
+              <h2>Events</h2>
+              <a class="view-link" href="#">View all events</a>
+            </div>
+            <div class="task">
+              <div class="calendar-box">8<br><small>Sept</small></div>
+              <div class="task-info">
+                <div class="task-title">Graduation Day...</div>
+                <div class="task-desc">Event description if applicable...</div>
+              </div>
+            </div>
+            <div class="task">
+              <div class="calendar-box">3<br><small>Sept</small></div>
+              <div class="task-info">
+                <div class="task-title">Event name here...</div>
+                <div class="task-desc">Event description if applicable...</div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const mainContainer = document.getElementById('mainContainer');
+        
+        menuToggle.addEventListener('click', function() {
+          // Toggle expanded state
+          sidebar.classList.toggle('expanded');
+          mainContainer.classList.toggle('sidebar-expanded');
+        });
+      });
+    </script>
+  </body>
+</html>
