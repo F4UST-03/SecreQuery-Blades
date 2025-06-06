@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SecreQuery Events</title>
+  <style>
+    body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f2f2f2;
+}
+
+/* Top bar */
+.topbar {
+  background-color: white;
+  padding: 0.5rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 0.01px solid #c0bdbd;
+}
+
+.topbar .logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.logo-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  height: 100%;
+}
+
+.topbar .logo-img {
+  background-color: #123362;
+  color: white;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  gap: 0.5rem;
+  margin-left: 0.5rem;
+}
+
+.topbar .user {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.topbar .user-circle {
+  background-color: #ccc;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: white;
+}
+.burger-menu {
+  font-size: 2.2rem;
+  cursor: pointer;
+  color: #123362;
+  margin-right: 0;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  height: 48px;
+}
+
+/* Sidebar */
+.sidebar {
+  background-color: #123362;
+  width: 60px;
+  position: fixed;
+  top: 60px;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 1rem;
+  gap: 1.5rem;
+}
+
+.sidebar i {
+  color: white;
+  font-size: 1.2rem;
+}
+
+/* Content */
+.content {
+  margin-left: 60px;
+  padding: 2rem;
+}
+
+.events-title {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.month-section {
+  margin-top: 2rem;
+}
+
+.month-title {
+  font-weight: bold;
+  color: #555;
+  margin-bottom: 0.5rem;
+}
+
+.event-card {
+  background-color: white;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.event-date {
+  background-color: #00a7d4;
+  color: white;
+  padding: 0.5rem;
+  text-align: center;
+  border-radius: 8px;
+  width: 60px;
+  margin-right: 1rem;
+}
+
+.event-date .month {
+  font-size: 0.75rem;
+}
+
+.event-date .day {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.event-info {
+  flex: 1;
+}
+
+.event-title {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.event-desc {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+
+  </style>
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="logo-row">
+      <span class="burger-menu">≡</span>
+      <div class="logo">
+        <img src="C:\Users\Admin\OneDrive\Pictures\remove the white bac.png" alt="SecreQuery Logo" class="logo-img">
+        <div class="logo-text">SecreQuery</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+
+  </div>
+
+  <!-- Main Content -->
+  <div class="content">
+    <div class="events-title">Events</div>
+
+    <!-- September Events -->
+    <div class="month-section">
+      <div class="month-title">September</div>
+      <div class="event-card">
+        <div class="event-date">
+          <div class="month">Sept</div>
+          <div class="day">3</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">Event name here...</div>
+          <div class="event-desc">Event description if applicable...</div>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="event-date">
+          <div class="month">Sept</div>
+          <div class="day">8</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">Graduation Day...</div>
+          <div class="event-desc">Event description if applicable...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- October Events -->
+    <div class="month-section">
+      <div class="month-title">October</div>
+      <div class="event-card">
+        <div class="event-date">
+          <div class="month">Oct</div>
+          <div class="day">3</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">Event name here...</div>
+          <div class="event-desc">Event description if applicable...</div>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="event-date">
+          <div class="month">Oct</div>
+          <div class="day">9</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">Event name here...</div>
+          <div class="event-desc">Event description if applicable...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
